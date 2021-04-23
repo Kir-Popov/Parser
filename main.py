@@ -138,7 +138,7 @@ def main():
     parser = GooglePlayParser(brand_name)
     apps = parser.work()
 
-    with open('apps.json', 'w') as f:
+    with open('apps.json', 'w', encoding='utf-8') as f:
         json.dump(apps, f, sort_keys=False, indent=2, ensure_ascii=False)
     print('Check file apps.json')
 
