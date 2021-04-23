@@ -1,4 +1,4 @@
-﻿from selenium import webdriver
+from selenium import webdriver
 from bs4 import BeautifulSoup
 import json
 import time
@@ -12,9 +12,9 @@ class GooglePlayParser:
         self._brand_name = brand_name
         with open("init.txt", "r") as f:
             driver_path = f.readline()
-        self.driver = webdriver.Chrome(executable_path=driver_path[:-1])
+        self.driver = webdriver.Chrome(driver_path[0:-1])
 
-    def __get_html_selenium(self, url):
+    def _get_html_selenium(self, url):
         # Path of your Chrome webdriver
         self.driver.get(url)
 
@@ -33,7 +33,7 @@ class GooglePlayParser:
         self.driver.quit()
         return main_page
 
-    def __brand_check(self, app_info):  # Checking brand name in app info
+    def _brand_check(self, app_info):  # Checking brand name in app info
         brand_used = False
         for field in app_info:
             field = field.lower()
@@ -41,7 +41,7 @@ class GooglePlayParser:
                 brand_used = True
         return brand_used
 
-    async def __get_app_data(self, session, link):
+    async def _get_app_data(self, session, link):
         host = "https://play.google.com"
         app_link = host + link.find('a').get('href')
         try:
@@ -89,7 +89,7 @@ class GooglePlayParser:
 
                 app_info = [name, author, genre, description]  # app_info needed to check brand
 
-                if self.__brand_check(app_info):
+                if self._brand_check(app_info):
                     app = {
                         'Name': name,
                         'Link': app_link,
@@ -105,7 +105,7 @@ class GooglePlayParser:
             print(e)
             return None
 
-    async def __get_content(self, html):
+    async def _get_content(self, html):
         start_time = time.time()
         soup = BeautifulSoup(html, 'html.parser')
         apps_links_tag = soup.find_all('div', class_='b8cIId ReQCgd Q9MA7b')
@@ -114,7 +114,7 @@ class GooglePlayParser:
         async with aiohttp.ClientSession(timeout=session_timeout) as session:
             apps = []
             for link in apps_links_tag:
-                app = asyncio.ensure_future(self.__get_app_data(session, link))
+                app = asyncio.ensure_future(self._get_app_data(session, link))
                 apps.append(app)
             end_apps = await asyncio.gather(*apps)  # apps and None objects
 
@@ -127,8 +127,8 @@ class GooglePlayParser:
 
     def work(self):
         url = "https://play.google.com/store/search?q=" + self._brand_name + "&c=apps"
-        html = self.__get_html_selenium(url)
-        apps = asyncio.run(self.__get_content(html))
+        html = self._get_html_selenium(url)
+        apps = asyncio.run(self._get_content(html))
         return apps
 
 
