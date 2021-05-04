@@ -4,18 +4,16 @@ import json
 import time
 import asyncio
 import aiohttp
+import config
 
 
 class GooglePlayParser:
 
     def __init__(self, brand_name):
         self._brand_name = brand_name
-        with open("init.txt", "r") as f:
-            driver_path = f.readline()
-        self.driver = webdriver.Chrome(driver_path[0:-1])
+        self.driver = webdriver.Chrome(config.DRIVER_PATH)
 
     def _get_html_selenium(self, url):
-        # Path of your Chrome webdriver
         self.driver.get(url)
 
         scroll_pause_time = 1
@@ -46,7 +44,7 @@ class GooglePlayParser:
         app_link = host + link.find('a').get('href')
         try:
             async with session.get(app_link) as response:
-                print("Working on " + app_link)
+                print(f"Working on {app_link}")
                 html = await response.text()  # await
 
                 #  parsing app page, all needed info in <main class = class_="LXrl4c">
@@ -126,7 +124,7 @@ class GooglePlayParser:
         return apps
 
     def work(self):
-        url = "https://play.google.com/store/search?q=" + self._brand_name + "&c=apps"
+        url = f"https://play.google.com/store/search?q={self._brand_name}&c=apps"
         html = self._get_html_selenium(url)
         apps = asyncio.run(self._get_content(html))
         return apps
