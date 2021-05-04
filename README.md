@@ -25,4 +25,4 @@
 1) pip3 install -r requirements.txt 
 2) sudo apt-get install chromium-chromedriver 
 ###
-!!! Необходимо установить драйвер хромиум браузера и вписать путь к драйверу в файл init.txt !!!
+!!! Необходимо установить драйвер хромиум браузера и вписать путь к драйверу в файл config.py !!!
